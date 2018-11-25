@@ -20,10 +20,12 @@ device = 'cpu'
 class MADDPG:
     def __init__(self, state_size, action_size):
         super(MADDPG, self).__init__()
-        self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, 1)
+        self.state_size = state_size
+        self.action_size = action_size
+        self.memory = ReplayBuffer(self.action_size, BUFFER_SIZE, BATCH_SIZE, 1)
 
-        self.maddpg_agent = [Agent(state_size, action_size, 0), 
-                             Agent(state_size, action_size, 13)]
+        self.maddpg_agent = [Agent(self.state_size, self.action_size, 0), 
+                             Agent(self.state_size, self.action_size, 13)]
         
         
     def get_target_actors(self):
@@ -115,4 +117,8 @@ class MADDPG:
             torch.save(agent.critic_local.state_dict(), './models/checkpoint_critic' + str(idx) + '.pth')
         
     def load_from_file(self):
-        return None
+        for idx,_ in enumerate(self.maddpg_agent):
+            self.maddpg_agent[idx].actor_local.load_state_dict(torch.load('./models/checkpoint_actor' + str(idx) + '.pth'))
+            self.maddpg_agent[idx].critic_local.load_state_dict(torch.load('./models/checkpoint_critic' + str(idx) + '.pth'))           
+            
+        print("Agents succesfully loaded")

@@ -3,7 +3,9 @@ import numpy as np
 from collections import deque
 import matplotlib.pyplot as plt
 import sys
+sys.path.append('./code')
 from maddpg import MADDPG
+
 sys.path.append('./code')
 
 def ddpg(n_episodes=3000, max_t=300):
